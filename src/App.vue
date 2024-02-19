@@ -2,7 +2,6 @@
   <div id="app">  
     <!-- Otro contenido de tu aplicación aquí -->
     <Chat />
-    
   </div>
 </template>
 
@@ -15,4 +14,3 @@ export default {
   }
 };
 </script>
-
