@@ -1,16 +1,15 @@
 <template>
-  <div id="app">  
-    <!-- Otro contenido de tu aplicación aquí -->
+  <div id="app">
     <Chat />
   </div>
 </template>
 
 <script>
-import Chat from './components/ChatGpt.vue';
+import Chat from "./components/ChatGpt.vue";
 
 export default {
   components: {
-    Chat
-  }
+    Chat,
+  },
 };
 </script>
