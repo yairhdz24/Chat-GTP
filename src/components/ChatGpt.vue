@@ -11,12 +11,12 @@
         :key="index"
         class="message">
         <div v-if="message.role === 'user'" class="user-message">
-          <div class="user"></div>
+          <strong class="user-name">TU:</strong>
           <span class="user-text">{{ message.content }}</span>
         </div>
         <div v-else-if="message.role === 'bot'" class="bot-message">
-          <div class="avatar"></div>
-          <div class="text">{{ message.content }}</div>
+          <strong class="bot-name">Chat GPT:</strong>
+          <span class="bot-text">{{ message.content }}</span>
         </div>
       </div>
     </div>
@@ -45,10 +45,17 @@
         </span>
       </button>
     </div>
+    <div
+      v-if="loading"
+      id="lottie-animation"
+      class="lottie-animation"
+    ></div>
   </div>
 </template>
 
 <script>
+import Lottie from "lottie-web";
+import animationData from "../assets/loading.json"; // Reemplaza esto con la ubicación de tu archivo JSON de animación
 import axios from "axios";
 
 export default {
@@ -57,6 +64,7 @@ export default {
       inputMessage: "",
       chatMessages: [],
       welcomeMessageShown: true,
+      loading: false, // Agrega un estado para controlar la visibilidad de la animación de carga
     };
   },
   methods: {
@@ -64,6 +72,8 @@ export default {
       if (this.inputMessage.trim() === "") return;
 
       this.welcomeMessageShown = false;
+      this.loading = true; // Muestra la animación de carga al enviar un mensaje
+
       try {
         // Enviar mensaje del usuario
         this.chatMessages.push({ role: "user", content: this.inputMessage });
@@ -77,10 +87,11 @@ export default {
           },
           {
             headers: {
-    'content-type': 'application/json',
-    'X-RapidAPI-Key': 'ba92110fa7msh49d75321278541bp102efcjsndfb1e40e0c06',
-    'X-RapidAPI-Host': 'chatgpt-42.p.rapidapi.com'
-  },
+              "content-type": "application/json",
+              "X-RapidAPI-Key":
+                "ba92110fa7msh49d75321278541bp102efcjsndfb1e40e0c06",
+              "X-RapidAPI-Host": "chatgpt-42.p.rapidapi.com",
+            },
           }
         );
 
@@ -88,15 +99,40 @@ export default {
         this.chatMessages.push({ role: "bot", content: response.data.result });
       } catch (error) {
         console.error("Error al enviar mensaje:", error);
+      } finally {
+        this.loading = false; // Oculta la animación de carga después de recibir la respuesta
       }
 
       this.inputMessage = ""; // Limpiar el campo de entrada después de enviar el mensaje
     },
   },
+  mounted() {
+    // Inicializa la animación Lottie cuando el componente se monta
+    Lottie.loadAnimation({
+      container: document.querySelector(".lottie-animation"),
+      renderer: "svg",
+      loop: true,
+      autoplay: false, // Desactiva la reproducción automática inicial
+      animationData: animationData, // Reemplaza esto con la variable que contiene los datos de tu animación
+    });
+  },
 };
 </script>
 
 <style scoped>
+
+.lottie-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+  z-index: 9999; /* Posición encima de todo */
+}
+
+
+
 .chat-container {
   width: 65vw; /* Ancho completo de la ventana */
   height: 100vh; /* Altura completa de la ventana */
@@ -123,28 +159,9 @@ export default {
 }
 
 .bot-message {
-  display: flex;
-  align-items: flex-start;
-  color: #ffffff; /* Color del texto del mensaje del bot */
+  text-align: left;
+  color: #ffffff;
 }
-
-/* .avatar {
-  width: 80px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 10px;
-  background-color: #e0e0e0; 
-  background-image: url("../assets/logo.svg");
-} */
-
-/* .user {
-  width: 10px;
-  height: 50px;
-  border-radius: 50%;
-  margin-right: 10px;
-  background-color: #e0e0e0; 
-  background-image: url("../assets/ChatGpt.png");
-} */
 
 .text {
   background-color: #424242; /* Color de fondo del mensaje del bot */
@@ -207,23 +224,33 @@ export default {
   /* border-radius: 400px; */
 }
 
+.user-text {
+  color: #ffffff;
+  background-color: #007bff; /* Color de fondo del mensaje del usuario */
+  padding: 10px;
+  border-radius: 10px;
+}
 
+.user-name,
+.bot-name {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10px;
+}
 
-/* Estilos existentes */
-
-/* Estilos para pantallas de tablet */
 @media (max-width: 768px) {
   .chat-container {
     width: 90vw;
   }
 
-  .avatar, .user {
+  .avatar,
+  .user {
     width: 40px;
     height: 40px;
   }
 
   .message {
-    margin-bottom: 15px;
+    margin-bottom: 25px;
   }
 
   .chat-input {
@@ -255,13 +282,18 @@ export default {
     height: 850px;
   }
 
-  .bot-message{
+  .bot-message {
     margin-left: -50px;
+    margin-bottom: 20px;
   }
-
 
   .message {
     margin-bottom: 10px;
+  }
+  .bot-text {
+    padding: 10px; /* Ajustar el relleno */
+    border-radius: 10px; /* Bordes redondeados */
+    max-width: 70%; /* Limitar el ancho del mensaje para evitar que se extienda demasiado */
   }
 
   .chat-input {

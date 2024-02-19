@@ -1,10 +1,8 @@
 <template>
   <div id="app">  
-
-    
-    
     <!-- Otro contenido de tu aplicación aquí -->
     <Chat />
+    
   </div>
 </template>
 
